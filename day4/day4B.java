@@ -12,6 +12,7 @@ public class day4B {
             while((s=br.readLine())!=null){
                 matrix.add(s.toCharArray());
             }
+            br.close();
         }
         catch(IOException e){
             e.printStackTrace();
