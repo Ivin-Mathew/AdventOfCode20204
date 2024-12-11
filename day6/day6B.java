@@ -12,7 +12,6 @@ public class day6B{
         int[] start = new int[2];
         int lnum = 0;
 
-        List<int[]> locs = new ArrayList<int[]>();
         
         try(BufferedReader br = new BufferedReader(new FileReader("day6sample.txt"))){
             String line;
@@ -38,35 +37,46 @@ public class day6B{
         System.out.println("Starting position:"+posx+","+posy);
         int count=0;
 
-        while(posy<rows && posx<cols){
-            if(!containsArray(locs, new int[]{posx, posy})){
-                locs.add(new int[]{posx,posy});
-            }
-            else
-                count++;
-            int newx = posx + direction[dir][0];
-            int newy = posy + direction[dir][1];
-            int stuck = 0;
-            while ((newx >= 0 && newx < cols && newy >= 0 && newy < rows) && grid.get(newy)[newx] == '#') {
-                dir = (dir + 1) % 4;
-                stuck++;
+        for(int i=0;i<rows;i++){
+            for(int j=0;j<cols;j++){
+                if (grid.get(i)[j] == '^' || grid.get(i)[j] == '#') {
+                    continue;
+                }
+                posx = start[1];
+                posy = start[0];
+                List<int[]> visited = new ArrayList<>();
+                List<char[]> testGrid = new ArrayList<>();
 
-                if(stuck==4)
-                    break;
+                for (char[] row : grid) {
+                    testGrid.add(row.clone());
+                }
+                testGrid.get(i)[j] = '#';
 
-                newx = posx + direction[dir][0];
-                newy = posy + direction[dir][1];
-            }
+                dir = 0;
 
-            if (newx >= 0 && newx < cols && newy >= 0 && newy < rows && stuck<4) {
-                posx = newx;
-                posy = newy;
+                while(posy<rows && posx<cols && posy>=0 && posx>=0){
+                    int[] currentState = {posx, posy, dir};
+
+                    if(containsArray(visited, currentState)){
+                        count++;
+                        break;
+                    }
+                    visited.add(currentState);
+                    
+        
+                    int newx = posx + direction[dir][0];
+                    int newy = posy + direction[dir][1];
+
+                    if (newx < 0 || newx >= cols || newy < 0 || newy >= rows || testGrid.get(newy)[newx] == '#') {
+                        dir = (dir + 1) % 4; // Turn right
+                    } else {
+                        posx = newx;
+                        posy = newy; // Move forward
+                    }
+                }
             }
-            else
-                break;
         }
-
-        System.out.println("Distinct positions = "+count);
+        System.out.println("Distinct positions = "+ count);
         
     }
 
@@ -77,5 +87,13 @@ public class day6B{
             }
         }
         return false;
+    }
+
+    public static void displayGrid(List<char[]> grid){
+        System.out.println("\n\n");
+        for(char[] i:grid){
+            System.out.println(i);
+        }
+        System.out.println("\n\n");
     }
 }
